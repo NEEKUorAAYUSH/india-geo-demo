@@ -1,0 +1,874 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Contact Us — India Geo API Demo</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --ink: #1a1208;
+      --ink-mid: #4a3f2f;
+      --ink-soft: #8a7a66;
+      --surface: #fdf8f0;
+      --surface-2: #f5ede0;
+      --surface-3: #ede0cc;
+      --accent: #c4501a;
+      --accent-soft: #f0d0b8;
+      --accent-dark: #8b3510;
+      --green: #2d6a4f;
+      --green-soft: #d8f3dc;
+      --border: rgba(60, 40, 10, 0.12);
+      --border-strong: rgba(60, 40, 10, 0.25);
+      --shadow: 0 2px 24px rgba(60, 30, 0, 0.08);
+      --shadow-hover: 0 8px 40px rgba(60, 30, 0, 0.14);
+      --radius: 14px;
+      --radius-sm: 8px;
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: 'Sora', sans-serif;
+      background: var(--surface);
+      color: var(--ink);
+      min-height: 100vh;
+      line-height: 1.6;
+    }
+
+    /* ── BACKGROUND TEXTURE ── */
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background-image:
+        radial-gradient(circle at 15% 20%, rgba(196,80,26,0.06) 0%, transparent 50%),
+        radial-gradient(circle at 85% 80%, rgba(196,80,26,0.04) 0%, transparent 50%),
+        radial-gradient(circle at 50% 50%, rgba(196,80,26,0.02) 0%, transparent 70%);
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    /* ── HEADER ── */
+    header {
+      position: sticky; top: 0; z-index: 100;
+      background: rgba(253, 248, 240, 0.88);
+      backdrop-filter: blur(16px);
+      border-bottom: 1px solid var(--border);
+      padding: 16px 40px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .logo {
+      font-size: 15px;
+      font-weight: 600;
+      color: var(--ink);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .logo-dot {
+      width: 28px; height: 28px;
+      background: var(--accent);
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 14px;
+    }
+
+    .api-badge {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 11px;
+      background: var(--accent-soft);
+      color: var(--accent-dark);
+      padding: 4px 12px;
+      border-radius: 20px;
+      border: 1px solid rgba(196,80,26,0.2);
+      font-weight: 500;
+      letter-spacing: 0.02em;
+    }
+
+    /* ── MAIN LAYOUT ── */
+    main {
+      position: relative; z-index: 1;
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 60px 40px 80px;
+      display: grid;
+      grid-template-columns: 1fr 520px;
+      gap: 80px;
+      align-items: start;
+    }
+
+    /* ── LEFT PANEL ── */
+    .left-panel { padding-top: 20px; }
+
+    .eyebrow {
+      font-size: 12px;
+      font-weight: 600;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: 20px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .eyebrow::before {
+      content: '';
+      display: block;
+      width: 24px; height: 2px;
+      background: var(--accent);
+      border-radius: 2px;
+    }
+
+    h1 {
+      font-size: clamp(36px, 4vw, 52px);
+      font-weight: 700;
+      line-height: 1.15;
+      color: var(--ink);
+      margin-bottom: 24px;
+      letter-spacing: -0.02em;
+    }
+
+    h1 em {
+      font-style: normal;
+      color: var(--accent);
+    }
+
+    .description {
+      font-size: 17px;
+      color: var(--ink-mid);
+      max-width: 400px;
+      line-height: 1.75;
+      margin-bottom: 48px;
+    }
+
+    /* ── STATS ── */
+    .stats {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+      margin-bottom: 48px;
+    }
+
+    .stat {
+      background: var(--surface-2);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      padding: 20px;
+    }
+
+    .stat-num {
+      font-size: 28px;
+      font-weight: 700;
+      color: var(--ink);
+      letter-spacing: -0.02em;
+      line-height: 1;
+      margin-bottom: 4px;
+    }
+
+    .stat-label {
+      font-size: 12px;
+      color: var(--ink-soft);
+      font-weight: 500;
+    }
+
+    /* ── HOW IT WORKS ── */
+    .how-it-works { margin-bottom: 48px; }
+
+    .steps-title {
+      font-size: 12px;
+      font-weight: 600;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--ink-soft);
+      margin-bottom: 16px;
+    }
+
+    .step {
+      display: flex;
+      gap: 14px;
+      align-items: flex-start;
+      margin-bottom: 14px;
+    }
+
+    .step-num {
+      width: 26px; height: 26px;
+      border-radius: 50%;
+      background: var(--accent);
+      color: white;
+      font-size: 12px;
+      font-weight: 600;
+      display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0;
+      margin-top: 2px;
+    }
+
+    .step-text { font-size: 14px; color: var(--ink-mid); line-height: 1.6; }
+    .step-text strong { color: var(--ink); font-weight: 600; }
+
+    /* ── POWERED BY ── */
+    .powered-by {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 12px;
+      color: var(--ink-soft);
+    }
+
+    .powered-by-pill {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 11px;
+      background: var(--surface-3);
+      border: 1px solid var(--border-strong);
+      border-radius: 4px;
+      padding: 3px 8px;
+      color: var(--ink-mid);
+    }
+
+    /* ── FORM CARD ── */
+    .form-card {
+      background: white;
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: 40px;
+      box-shadow: var(--shadow);
+      transition: box-shadow 0.3s ease;
+    }
+
+    .form-card:hover { box-shadow: var(--shadow-hover); }
+
+    .form-title {
+      font-size: 20px;
+      font-weight: 700;
+      color: var(--ink);
+      margin-bottom: 6px;
+      letter-spacing: -0.01em;
+    }
+
+    .form-subtitle {
+      font-size: 13px;
+      color: var(--ink-soft);
+      margin-bottom: 32px;
+    }
+
+    .divider {
+      height: 1px;
+      background: var(--border);
+      margin: 24px 0;
+    }
+
+    /* ── FORM FIELDS ── */
+    .field { margin-bottom: 18px; }
+
+    .field-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 14px;
+      margin-bottom: 18px;
+    }
+
+    label {
+      display: block;
+      font-size: 12px;
+      font-weight: 600;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      color: var(--ink-soft);
+      margin-bottom: 6px;
+    }
+
+    .required::after {
+      content: ' *';
+      color: var(--accent);
+    }
+
+    input[type="text"],
+    input[type="email"],
+    input[type="tel"],
+    textarea {
+      width: 100%;
+      font-family: 'Sora', sans-serif;
+      font-size: 14px;
+      color: var(--ink);
+      background: var(--surface);
+      border: 1px solid var(--border-strong);
+      border-radius: var(--radius-sm);
+      padding: 11px 14px;
+      outline: none;
+      transition: border-color 0.2s, box-shadow 0.2s, background 0.2s;
+      -webkit-appearance: none;
+    }
+
+    input:focus, textarea:focus {
+      border-color: var(--accent);
+      background: white;
+      box-shadow: 0 0 0 3px rgba(196,80,26,0.1);
+    }
+
+    input.filled { background: white; border-color: var(--border-strong); }
+    input.auto-filled {
+      background: var(--green-soft);
+      border-color: var(--green);
+      color: var(--green);
+      font-weight: 500;
+    }
+
+    textarea { resize: vertical; min-height: 100px; }
+
+    /* ── ADDRESS SECTION ── */
+    .address-section-label {
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: 14px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .address-section-label::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: var(--accent-soft);
+    }
+
+    /* ── AUTOCOMPLETE ── */
+    .autocomplete-wrap { position: relative; }
+
+    .search-icon {
+      position: absolute;
+      left: 12px; top: 50%;
+      transform: translateY(-50%);
+      width: 16px; height: 16px;
+      color: var(--ink-soft);
+      pointer-events: none;
+    }
+
+    .autocomplete-wrap input { padding-left: 38px; }
+
+    .dropdown {
+      position: absolute;
+      top: calc(100% + 6px);
+      left: 0; right: 0;
+      background: white;
+      border: 1px solid var(--border-strong);
+      border-radius: var(--radius-sm);
+      box-shadow: 0 12px 40px rgba(60,30,0,0.12);
+      z-index: 50;
+      max-height: 280px;
+      overflow-y: auto;
+      display: none;
+    }
+
+    .dropdown.open { display: block; }
+
+    .dropdown-item {
+      padding: 10px 14px;
+      cursor: pointer;
+      border-bottom: 1px solid var(--border);
+      transition: background 0.15s;
+    }
+
+    .dropdown-item:last-child { border-bottom: none; }
+    .dropdown-item:hover { background: var(--accent-soft); }
+
+    .dropdown-village {
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--ink);
+    }
+
+    .dropdown-path {
+      font-size: 11px;
+      color: var(--ink-soft);
+      margin-top: 2px;
+      font-family: 'JetBrains Mono', monospace;
+    }
+
+    .dropdown-loading, .dropdown-empty {
+      padding: 14px;
+      font-size: 13px;
+      color: var(--ink-soft);
+      text-align: center;
+    }
+
+    /* ── ADDRESS GRID ── */
+    .address-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      margin-top: 14px;
+    }
+
+    /* ── SUBMIT BUTTON ── */
+    .submit-btn {
+      width: 100%;
+      margin-top: 24px;
+      background: var(--accent);
+      color: white;
+      border: none;
+      border-radius: var(--radius-sm);
+      padding: 14px;
+      font-family: 'Sora', sans-serif;
+      font-size: 15px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.2s, transform 0.15s, box-shadow 0.2s;
+      letter-spacing: 0.01em;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+    }
+
+    .submit-btn:hover {
+      background: var(--accent-dark);
+      box-shadow: 0 4px 20px rgba(196,80,26,0.35);
+      transform: translateY(-1px);
+    }
+
+    .submit-btn:active { transform: translateY(0); }
+
+    .submit-btn.loading { opacity: 0.7; cursor: not-allowed; }
+
+    /* ── SUCCESS STATE ── */
+    .success-state {
+      text-align: center;
+      padding: 40px 20px;
+      display: none;
+    }
+
+    .success-state.show { display: block; }
+
+    .success-icon {
+      width: 64px; height: 64px;
+      background: var(--green-soft);
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      margin: 0 auto 20px;
+      font-size: 28px;
+    }
+
+    .success-title {
+      font-size: 22px;
+      font-weight: 700;
+      color: var(--ink);
+      margin-bottom: 8px;
+    }
+
+    .success-address {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 12px;
+      background: var(--surface-2);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      padding: 14px;
+      color: var(--green);
+      margin: 20px 0;
+      text-align: left;
+      line-height: 2;
+    }
+
+    .reset-btn {
+      background: none;
+      border: 1px solid var(--border-strong);
+      border-radius: var(--radius-sm);
+      padding: 10px 24px;
+      font-family: 'Sora', sans-serif;
+      font-size: 14px;
+      color: var(--ink-mid);
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+
+    .reset-btn:hover { background: var(--surface-2); }
+
+    /* ── API INFO FOOTER ── */
+    .api-info {
+      margin-top: 20px;
+      padding: 14px;
+      background: var(--surface-2);
+      border-radius: var(--radius-sm);
+      border: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .api-info-text {
+      font-size: 11px;
+      color: var(--ink-soft);
+      line-height: 1.5;
+    }
+
+    .api-info-text code {
+      font-family: 'JetBrains Mono', monospace;
+      background: white;
+      border: 1px solid var(--border);
+      border-radius: 3px;
+      padding: 1px 5px;
+      font-size: 10px;
+      color: var(--accent);
+    }
+
+    .pulse {
+      width: 8px; height: 8px;
+      background: var(--green);
+      border-radius: 50%;
+      flex-shrink: 0;
+      animation: pulse 2s infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.6; transform: scale(0.85); }
+    }
+
+    /* ── RESPONSIVE ── */
+    @media (max-width: 860px) {
+      main { grid-template-columns: 1fr; gap: 40px; }
+      .left-panel { padding-top: 0; }
+      header { padding: 14px 20px; }
+      main { padding: 40px 20px 60px; }
+      .stats { grid-template-columns: 1fr 1fr; }
+      .form-card { padding: 28px 24px; }
+    }
+
+    @media (max-width: 480px) {
+      .field-row { grid-template-columns: 1fr; }
+      .address-grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <div class="logo">
+    <div class="logo-dot">🇮🇳</div>
+    India Geo API — Demo
+  </div>
+  <span class="api-badge">live api demo</span>
+</header>
+
+<main>
+  <!-- LEFT PANEL -->
+  <div class="left-panel">
+    <div class="eyebrow">Address Autocomplete Demo</div>
+    <h1>The <em>smartest</em> address form for India</h1>
+    <p class="description">
+      Type any village name. Watch the entire address hierarchy fill itself — sub-district, district, state — all from a single API call.
+    </p>
+
+    <div class="stats">
+      <div class="stat">
+        <div class="stat-num">450K+</div>
+        <div class="stat-label">Villages indexed</div>
+      </div>
+      <div class="stat">
+        <div class="stat-num">29</div>
+        <div class="stat-label">States & UTs</div>
+      </div>
+      <div class="stat">
+        <div class="stat-num">&lt;100ms</div>
+        <div class="stat-label">API response</div>
+      </div>
+      <div class="stat">
+        <div class="stat-num">3NF</div>
+        <div class="stat-label">Normalized data</div>
+      </div>
+    </div>
+
+    <div class="how-it-works">
+      <div class="steps-title">How the API works</div>
+      <div class="step">
+        <div class="step-num">1</div>
+        <div class="step-text"><strong>User types</strong> a village or area name (minimum 2 chars)</div>
+      </div>
+      <div class="step">
+        <div class="step-num">2</div>
+        <div class="step-text"><strong>Frontend calls</strong> <code style="font-family:monospace;font-size:12px;background:var(--surface-3);padding:1px 5px;border-radius:3px">/api/v1/search?q=...</code></div>
+      </div>
+      <div class="step">
+        <div class="step-num">3</div>
+        <div class="step-text"><strong>API returns</strong> villages with full hierarchy data</div>
+      </div>
+      <div class="step">
+        <div class="step-num">4</div>
+        <div class="step-text"><strong>All address fields</strong> auto-populate instantly</div>
+      </div>
+    </div>
+
+    <div class="powered-by">
+      <span>Powered by</span>
+      <span class="powered-by-pill">india-geo-api.vercel.app</span>
+      <span>·</span>
+      <span class="powered-by-pill">NeonDB + Prisma</span>
+    </div>
+  </div>
+
+  <!-- FORM CARD -->
+  <div class="form-card">
+    <div class="form-title">Get in touch</div>
+    <div class="form-subtitle">Fill the form — the address autocomplete is powered by our live API</div>
+
+    <div id="form-content">
+      <!-- PERSONAL DETAILS -->
+      <div class="field-row">
+        <div class="field">
+          <label class="required">First name</label>
+          <input type="text" id="fname" placeholder="Aayush" />
+        </div>
+        <div class="field">
+          <label class="required">Last name</label>
+          <input type="text" id="lname" placeholder="Saini" />
+        </div>
+      </div>
+
+      <div class="field">
+        <label class="required">Email address</label>
+        <input type="email" id="email" placeholder="aayush@example.com" />
+      </div>
+
+      <div class="field">
+        <label>Phone number</label>
+        <input type="tel" id="phone" placeholder="+91 98765 43210" />
+      </div>
+
+      <div class="divider"></div>
+
+      <!-- ADDRESS -->
+      <div class="address-section-label">Address (API-powered autocomplete)</div>
+
+      <div class="field">
+        <label class="required">Village / Area</label>
+        <div class="autocomplete-wrap">
+          <svg class="search-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5">
+            <circle cx="6.5" cy="6.5" r="4.5"/><path d="m10.5 10.5 3 3"/>
+          </svg>
+          <input type="text" id="village-input" placeholder="Type a village name e.g. Dharavi, Manibeli..." autocomplete="off" />
+          <div class="dropdown" id="dropdown"></div>
+        </div>
+      </div>
+
+      <div class="address-grid">
+        <div class="field" style="margin-bottom:0">
+          <label>Sub-district</label>
+          <input type="text" id="subdistrict" placeholder="Auto-filled" readonly />
+        </div>
+        <div class="field" style="margin-bottom:0">
+          <label>District</label>
+          <input type="text" id="district" placeholder="Auto-filled" readonly />
+        </div>
+        <div class="field" style="margin-bottom:0">
+          <label>State</label>
+          <input type="text" id="state" placeholder="Auto-filled" readonly />
+        </div>
+        <div class="field" style="margin-bottom:0">
+          <label>Country</label>
+          <input type="text" id="country" value="India" readonly class="auto-filled" />
+        </div>
+      </div>
+
+      <div class="divider"></div>
+
+      <div class="field">
+        <label>Message</label>
+        <textarea id="message" placeholder="Your message here..."></textarea>
+      </div>
+
+      <button class="submit-btn" id="submit-btn" onclick="handleSubmit()">
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5">
+          <path d="M2 8h12M9 3l5 5-5 5"/>
+        </svg>
+        Send Message
+      </button>
+
+      <div class="api-info">
+        <div class="pulse"></div>
+        <div class="api-info-text">
+          Address data served live from <code>india-geo-api.vercel.app/api/v1/search</code>
+          — Census of India 2011 dataset, 450K+ villages
+        </div>
+      </div>
+    </div>
+
+    <!-- SUCCESS STATE -->
+    <div class="success-state" id="success-state">
+      <div class="success-icon">✓</div>
+      <div class="success-title">Message sent!</div>
+      <p style="font-size:14px;color:var(--ink-mid);margin-bottom:4px">Standardized address captured:</p>
+      <div class="success-address" id="success-address"></div>
+      <p style="font-size:12px;color:var(--ink-soft);margin-bottom:20px">
+        This address format is ready for any logistics, e-commerce, or delivery system.
+      </p>
+      <button class="reset-btn" onclick="resetForm()">Send another message</button>
+    </div>
+  </div>
+</main>
+
+<script>
+  const API_BASE = 'https://india-geo-api.vercel.app';
+  let searchTimeout = null;
+  let selectedVillage = null;
+
+  const villageInput = document.getElementById('village-input');
+  const dropdown = document.getElementById('dropdown');
+  const subdistrictInput = document.getElementById('subdistrict');
+  const districtInput = document.getElementById('district');
+  const stateInput = document.getElementById('state');
+
+  function setAutoFilled(el, value) {
+    el.value = value;
+    el.className = 'auto-filled';
+  }
+
+  function clearAutoFilled() {
+    [subdistrictInput, districtInput, stateInput].forEach(el => {
+      el.value = '';
+      el.className = '';
+    });
+    selectedVillage = null;
+  }
+
+  villageInput.addEventListener('input', () => {
+    const q = villageInput.value.trim();
+    clearAutoFilled();
+
+    if (q.length < 2) { closeDropdown(); return; }
+
+    clearTimeout(searchTimeout);
+    showLoading();
+
+    searchTimeout = setTimeout(() => fetchVillages(q), 320);
+  });
+
+  villageInput.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') closeDropdown();
+  });
+
+  document.addEventListener('click', (e) => {
+    if (!e.target.closest('.autocomplete-wrap')) closeDropdown();
+  });
+
+  async function fetchVillages(q) {
+    try {
+      const res = await fetch(`${API_BASE}/api/v1/search?q=${encodeURIComponent(q)}&type=village&limit=8`, {
+        method: 'GET',
+        headers: {
+          'x-api-key': 'igapi_7e6f2ce9379045b39d8273fcdf70de91' 
+        }
+      });
+      
+      const data = await res.json();
+      
+      if (!res.ok) throw new Error('API Error');
+
+      const villages = data?.data?.villages || [];
+      renderDropdown(villages);
+    } catch {
+      dropdown.innerHTML = '<div class="dropdown-empty">Could not connect to API or Invalid Key</div>';
+      dropdown.classList.add('open');
+    }
+  }
+
+  function showLoading() {
+    dropdown.innerHTML = '<div class="dropdown-loading">Searching 450,000+ villages...</div>';
+    dropdown.classList.add('open');
+  }
+
+  function renderDropdown(villages) {
+    if (!villages.length) {
+      dropdown.innerHTML = '<div class="dropdown-empty">No villages found — try a different spelling</div>';
+      dropdown.classList.add('open');
+      return;
+    }
+
+    dropdown.innerHTML = villages.map((v, i) => `
+      <div class="dropdown-item" onclick="selectVillage(${i})" data-index="${i}">
+        <div class="dropdown-village">${v.name}</div>
+        <div class="dropdown-path">${v.label || '—'}</div>
+      </div>
+    `).join('');
+
+    dropdown.classList.add('open');
+    dropdown._villages = villages;
+  }
+
+  function selectVillage(index) {
+    const v = dropdown._villages[index];
+    if (!v) return;
+
+    selectedVillage = v;
+    villageInput.value = v.name;
+    setAutoFilled(subdistrictInput, v.subdistrictName || '—');
+    setAutoFilled(districtInput, v.districtName || '—');
+    setAutoFilled(stateInput, v.stateName || '—');
+    closeDropdown();
+  }
+
+  function closeDropdown() {
+    dropdown.classList.remove('open');
+  }
+
+  function handleSubmit() {
+    const fname = document.getElementById('fname').value.trim();
+    const email = document.getElementById('email').value.trim();
+    const village = villageInput.value.trim();
+
+    if (!fname) { alert('Please enter your first name'); return; }
+    if (!email) { alert('Please enter your email address'); return; }
+    if (!village) { alert('Please select a village from the dropdown'); return; }
+    if (!selectedVillage) { alert('Please select a village from the dropdown (start typing and choose from the list)'); return; }
+
+    const btn = document.getElementById('submit-btn');
+    btn.classList.add('loading');
+    btn.textContent = 'Sending...';
+
+    setTimeout(() => {
+      document.getElementById('form-content').style.display = 'none';
+      const successState = document.getElementById('success-state');
+      successState.classList.add('show');
+
+      const addressLines = [
+        `Village   : ${selectedVillage.name}`,
+        `Sub-Dist  : ${selectedVillage.subdistrictName || '—'}`,
+        `District  : ${selectedVillage.districtName || '—'}`,
+        `State     : ${selectedVillage.stateName || '—'}`,
+        `Country   : India`,
+        ``,
+        `Standardized: ${selectedVillage.label}`,
+      ];
+
+      document.getElementById('success-address').innerText = addressLines.join('\n');
+    }, 1200);
+  }
+
+  function resetForm() {
+    document.getElementById('form-content').style.display = 'block';
+    const successState = document.getElementById('success-state');
+    successState.classList.remove('show');
+    document.getElementById('fname').value = '';
+    document.getElementById('lname').value = '';
+    document.getElementById('email').value = '';
+    document.getElementById('phone').value = '';
+    document.getElementById('message').value = '';
+    villageInput.value = '';
+    clearAutoFilled();
+    const btn = document.getElementById('submit-btn');
+    btn.classList.remove('loading');
+    btn.innerHTML = `<svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M2 8h12M9 3l5 5-5 5"/></svg> Send Message`;
+  }
+</script>
+</body>
+</html>
