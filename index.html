@@ -846,11 +846,13 @@
       const successState = document.getElementById('success-state');
       successState.classList.add('show');
 
+     const addressParts = selectedVillage.label ? selectedVillage.label.split(', ') : [];
+
       const addressLines = [
         `Village   : ${selectedVillage.name}`,
-        `Sub-Dist  : ${selectedVillage.subdistrictName || '—'}`,
-        `District  : ${selectedVillage.districtName || '—'}`,
-        `State     : ${selectedVillage.stateName || '—'}`,
+        `Sub-Dist  : ${addressParts[1] || '—'}`,
+        `District  : ${addressParts[2] || '—'}`,
+        `State     : ${addressParts[3] || '—'}`,
         `Country   : India`,
         ``,
         `Standardized: ${selectedVillage.label}`,
