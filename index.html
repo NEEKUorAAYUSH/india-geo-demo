@@ -811,9 +811,15 @@
 
     selectedVillage = v;
     villageInput.value = v.name;
-    setAutoFilled(subdistrictInput, v.subdistrictName || '—');
-    setAutoFilled(districtInput, v.districtName || '—');
-    setAutoFilled(stateInput, v.stateName || '—');
+    
+    // Split the label string into an array: [Village, Sub-District, District, State, Country]
+    const addressParts = v.label ? v.label.split(', ') : [];
+
+    // Assign the correct parts to the input boxes based on their position
+    setAutoFilled(subdistrictInput, addressParts[1] || '—');
+    setAutoFilled(districtInput, addressParts[2] || '—');
+    setAutoFilled(stateInput, addressParts[3] || '—');
+    
     closeDropdown();
   }
 
